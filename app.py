@@ -1,5 +1,6 @@
 # Importing libraries
 from flask import Flask, flash, redirect, render_template, request, session, jsonify
+import requests
 from flask_session import Session
 from tempfile import mkdtemp
 import numpy as np
@@ -220,8 +221,3 @@ def checklist():
 
         diagnosis = progs[predictions[0]]
         return render_template('results.html', condition=diagnosis, selected_symptom_list = cpy)
-
-@app.route('/get_disease_info/<disease_name>', methods=['GET'])
-def get_disease_info_by_name(disease_name):
-    disease_info = get_disease_info(disease_name)
-    return render_template('disease_info.html', **disease_info)
