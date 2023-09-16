@@ -108,7 +108,6 @@ def index():
         elif request.form.get('sign_email')== None:
             """Log user in"""
 
-            print(request.form.get("log_email") == "")
 
             # Forget any user_id
             session.clear()
@@ -125,11 +124,9 @@ def index():
                 # Ensure username exists and password is correct
                 if len(rows) != 1 or not check_password_hash(rows[0][1], request.form.get("log_password")):
                     return render_template("index.html", error="Incorrect login information")
-                print(rows[0][1])
                 # Remember which user has logged in
                 session["user_email"] = rows[0][0]
                 session["user_password"] = rows[0][1]
-
 
                 # Redirect user to home page
                 return render_template("checklist.html", symptom_list = x.columns)
@@ -152,3 +149,25 @@ def index():
         return render_template("index.html", error = "")
 
     return render_template("index.html", error = "")
+
+@app.route("/checklist", methods = ['GET', 'POST'])
+def checklist():
+    if request.method == "GET":
+        return render_template('checklist.html')
+    if request.method == "POST":
+        symptoms = list(map(int, request.form.getlist('symptom')))
+        cpy = symptoms
+        i = 0
+        while i < len(symptoms) - 1:
+            if symptoms[i] == 0 and symptoms[i+1] == 1:
+                del symptoms[i]
+            else:
+                i += 1
+
+        symptoms = [symptoms]
+
+        predictions = logmodel.predict(symptoms)
+
+        diagnosis = progs[predictions[0]]
+        return render_template('results.html', condition=diagnosis, selected_symptom_list = cpy)
+        

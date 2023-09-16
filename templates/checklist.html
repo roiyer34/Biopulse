@@ -2,11 +2,11 @@
 <title>Checklist Form</title>
 <link rel="stylesheet" href="../static/style.css">
 <section class="content">
-    <form id="checklist" method="post" action= "/">
+    <form name="checklist" method="post" action= "/checklist">
         {% for symptom in symptom_list %}
         <div>
-            <input type="hidden" name={{symptom}} value="0">
-            <input type="checkbox" name={{symptom}} id={{symptom}} value="1"/>
+            <input type="hidden" name= "symptom" value="0">
+            <input type="checkbox" name="symptom" id={{symptom}} value="1"/>
             <label for={{symptom}}>{{symptom}}</label>
         </div>
         {% endfor %}
