@@ -258,8 +258,9 @@ def checklist():
         elif request.form.get("user_profile"):
             return render_template("userprofile.html")
         elif request.form.get("logout"):
+            print("came into else statement")
             session.clear()
-            redirect("/")
+            return redirect("/")
         
         temp = request.form.getlist('symptom')
         symptoms = [0] * 132
@@ -305,7 +306,7 @@ def results():
             return render_template("userprofile.html")
         elif request.form.get("logout"):
             session.clear()
-            redirect("/")
+            return redirect("/")
 
 @app.route("/userprofile", methods = ['GET', 'POST'])
 def userprofile():
@@ -321,7 +322,7 @@ def userprofile():
             return render_template("userprofile.html")
         elif request.form.get("logout"):
             session.clear()
-            redirect("/")
+            return redirect("/")
         #more error checking
         if(request.form.get("newUsername") != None):
             rows = cur.execute("SELECT * FROM users WHERE email = ?;", (request.form.get("newUsername"),)).fetchall()
@@ -360,4 +361,5 @@ def resultlog():
             return render_template("userprofile.html")
         elif request.form.get("logout"):
             session.clear()
-            redirect("/")
+            return redirect("/")
+    return render_template("index.html", error= "")
