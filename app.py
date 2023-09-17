@@ -192,6 +192,9 @@ def index():
             if request.form.get("sign_confirm") == request.form.get("sign_password") and not request.form.get("sign_password") == "" and not request.form.get("sign_email") == "":
                 cur.execute("INSERT INTO users (email, hash, prevConditions) VALUES (?,?, ?);", (request.form.get("sign_email"), generate_password_hash(request.form.get("sign_password")), json.dumps([])))
                 conn.commit()
+                rows = cur.execute("SELECT * FROM users WHERE email = ?", (request.form.get("log_email"),)).fetchall()
+                session["user_email"] = rows[0][0]
+                session["user_password"] = rows[0][1]
                 return render_template("checklist.html", symptom_list = x.columns)
             else:
                 return render_template("index.html", error="Passwords don't match")
@@ -283,6 +286,7 @@ def checklist():
         temp = json.loads(temp)
         temp.insert(0, [str(date.today()), diagnosis, string_symptoms])
         cur.execute("UPDATE users SET prevConditions=(?) WHERE email=(?);", (json.dumps(temp), session["user_email"]))
+        conn.commit()
         # Pass the data to the template
         return render_template('results.html', **data_to_render)
     
