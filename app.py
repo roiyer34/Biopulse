@@ -86,7 +86,7 @@ MEDLINEPLUS_BASE_URL = "https://wsearch.nlm.nih.gov/ws/query"
 
 def extract_summary(xml_content):
     # Parse the XML content
-    root = ETIME.fromstring(xml_content)
+    root = ET.fromstring(xml_content)
 
     # Initialize variables to store the most relevant result
     most_relevant_result = None
@@ -105,6 +105,7 @@ def extract_summary(xml_content):
         # Extract information from the most relevant result
         title = most_relevant_result.find(".//content[@name='title']").text
         description = most_relevant_result.find(".//content[@name='FullSummary']").text
+        print(description)
 
         return {"title": title, "description": description}
     else:
@@ -115,7 +116,7 @@ def get_disease_info(disease_name):
         return jsonify({"error": "Disease name not provided"})
 
     # Construct the query URL
-    query_url = f"{MEDLINEPLUS_BASE_URL}?db=healthTopics&term={disease_name}&rettype=xml"
+    query_url = f"{MEDLINEPLUS_BASE_URL}?db=healthTopics&term={disease_name}"
 
     try:
         # Send a GET request to the MedlinePlus API
@@ -220,7 +221,7 @@ def checklist():
 
         description = get_disease_info(diagnosis)
 
-        return render_template('results.html', condition=diagnosis, selected_symptom_list = cpy, description = description)
+        return render_template('results.html', condition=diagnosis, selected_symptom_list = cpy, **description)
 @app.route("/userprofile", methods = ['GET', 'POST'])
 def userprofile():
     if request.method == "GET":
