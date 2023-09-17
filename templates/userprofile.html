@@ -10,8 +10,18 @@
     <link rel="stylesheet" href="../static/style.css">
 </head>
 
+<div class="topnav">
+    <form method="post" action="/">
+        <input type="submit" value="Checklist" name="checklist"></input>
+    </form>
+    <a class="active" href="#home">User Profile</a>
+    <form method="post" action="/">
+        <input type="submit" value="Result Log" name="result_log"></input>
+    </form>
+</div>
+
 <body>
-    <h1>User Profile Management</h1>
+    <h1>User Profile</h1>
     
     <h2>Change Username</h2>
     <p>Current Username: <span id="currentUsername">{{username}}</span></p>
@@ -21,6 +31,8 @@
         <br>
         <input type="submit" value="Change Username">
     </form>
+
+    <p>{{error_username}}</p>
 
     <h2>Change Password</h2>
     <form id="passwordForm" method="post" action="/">
@@ -35,6 +47,7 @@
         <br>
         <input type="submit" value="Change Password">
     </form>
+    <p>{{error_password}}</p>
 
     <h2>Delete Profile</h2>
     <form id="deleteProfile" method="post" action="/">
