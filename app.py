@@ -248,6 +248,8 @@ def index():
 @app.route("/checklist", methods = ['GET', 'POST'])
 def checklist():
     if request.method == "GET":
+        if session == None or len(session) == 0:
+            return redirect("/")
         return render_template("checklist.html", symptom_list = formattedSymptoms)
     if request.method == "POST":
         if request.form.get("checklist"):
@@ -295,6 +297,8 @@ def checklist():
 @app.route("/results", methods = ['GET', 'POST'])
 def results():
     if request.method == "GET":
+        if session == None or len(session) == 0:
+            return redirect("/")
         return render_template("checklist.html", symptom_list = formattedSymptoms)
     if request.method == "POST":
         if request.form.get("checklist"):
@@ -311,6 +315,8 @@ def results():
 @app.route("/userprofile", methods = ['GET', 'POST'])
 def userprofile():
     if request.method == "GET":
+        if session == None or len(session) == 0:
+            return redirect("/")
         return render_template('userprofile.html')
     if request.method == "POST":
         if request.form.get("checklist"):
@@ -349,6 +355,8 @@ def userprofile():
 @app.route("/resultlog", methods = ['GET', 'POST'])
 def resultlog():
     if request.method == "GET":
+        if session == None or len(session) == 0:
+            return redirect("/")
         temp = json.loads(cur.execute("SELECT * FROM USERS WHERE email=(?)", session["user_email"]).fetchall()[0][0])
         return render_template('resultlog.html', data=temp)
     if request.method == "POST":
