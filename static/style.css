@@ -183,3 +183,9 @@ body {
     /*gap: 10px;*/
     /* Adjust the gap as needed */
 }
+
+ul {
+    /* Add padding-left to move the bullet points to the right */
+    padding-left: 20px;
+    /* Adjust the value as needed */
+}
