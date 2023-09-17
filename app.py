@@ -131,11 +131,13 @@ def get_disease_info(disease_name):
 
     except requests.exceptions.RequestException as e:
         return {"error": f"Error connecting to MedlinePlus API: {str(e)}"}
-
+    
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "GET":
+        if session != None:
+            return render_template("checklist.html", symptom_list = x.columns)
         return render_template("index.html", error = "")
     elif request.method == "POST":
         #user is trying to register
@@ -201,8 +203,14 @@ def index():
 @app.route("/checklist", methods = ['GET', 'POST'])
 def checklist():
     if request.method == "GET":
-        return render_template('checklist.html')
+        return render_template("checklist.html", symptom_list = x.columns)
     if request.method == "POST":
+        if request.form.get("checklist"):
+            return render_template("checklist.html", symptom_list = x.columns)
+        elif request.form.get("result_log"):
+            return render_template("resultlog.html")
+        elif request.form.get("user_profile"):
+            return render_template("userprofile.html")
         symptoms = list(map(int, request.form.getlist('symptom')))
         cpy = symptoms
         i = 0
@@ -230,12 +238,30 @@ def checklist():
 
         # Pass the data to the template
         return render_template('results.html', **data_to_render)
+    
+@app.route("/results", methods = ['GET', 'POST'])
+def results():
+    if request.method == "GET":
+        return render_template("checklist.html", symptom_list = x.columns)
+    if request.method == "POST":
+        if request.form.get("checklist"):
+            return render_template("checklist.html")
+        elif request.form.get("result_log"):
+            return render_template("resultlog.html")
+        elif request.form.get("user_profile"):
+            return render_template("userprofile.html")
 
 @app.route("/userprofile", methods = ['GET', 'POST'])
 def userprofile():
     if request.method == "GET":
         return render_template('userprofile.html')
     if request.method == "POST":
+        if request.form.get("checklist"):
+            return render_template("checklist.html", symptom_list = x.columns)
+        elif request.form.get("result_log"):
+            return render_template("resultlog.html")
+        elif request.form.get("user_profile"):
+            return render_template("userprofile.html")
         #more error checking
         if(request.form.get("newUsername") != None):
             rows = cur.execute("SELECT * FROM users WHERE email = ?;", (request.form.get("newUsername"),)).fetchall()
@@ -252,7 +278,7 @@ def userprofile():
             return render_template('userprofile.html', error="Password Changed")
         elif(request.form.get("newPassword") != request.form.get("confirmPassword") and request.form.get("newPassword") != None):
             return render_template('userprofile.html', error_password="Password Did Not Match")
-        else:
+        elif(request.form.get("deleteProfileButton")):
             cur.execute("DELETE FROM users WHERE email=(?)", session["user_email"])
             conn.commit()
             session["user_email"] = None
