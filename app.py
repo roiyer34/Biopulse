@@ -18,7 +18,6 @@ import os
 from werkzeug.security import check_password_hash, generate_password_hash
 import xml.etree.ElementTree as ET
 import re
-import language_tool_python
 
 # Create sql database
 db = os.path.realpath('Users.db')
@@ -113,14 +112,8 @@ def extract_description(xml_content):
         # Add spaces after periods to separate sentences
         cleaned_description = re.sub(r'(?<=[.!?])', ' ', cleaned_description)
 
-        # Initialize the language tool
-        tool = language_tool_python.LanguageTool('en-US')
-
-        # Check for grammar errors
-        matches = tool.check(cleaned_description)
-
-        # Correct grammar errors
-        cleaned_description = language_tool_python.correct(cleaned_description, matches)
+        # Add double newline characters to separate paragraphs
+        cleaned_description = re.sub(r'\n', '\n\n', cleaned_description)
 
         return cleaned_description  # Return as a single string
     else:
@@ -230,9 +223,6 @@ def checklist():
             return render_template("resultlog.html")
         elif request.form.get("user_profile"):
             return render_template("userprofile.html")
-        elif request.form.get("logout"):
-            session.clear()
-            redirect("/")
         symptoms = list(map(int, request.form.getlist('symptom')))
         i = 0
         while i < len(symptoms) - 1:
@@ -277,9 +267,6 @@ def results():
             return render_template("resultlog.html")
         elif request.form.get("user_profile"):
             return render_template("userprofile.html")
-        elif request.form.get("logout"):
-            session.clear()
-            redirect("/")
 
 @app.route("/userprofile", methods = ['GET', 'POST'])
 def userprofile():
@@ -292,9 +279,6 @@ def userprofile():
             return render_template("resultlog.html")
         elif request.form.get("user_profile"):
             return render_template("userprofile.html")
-        elif request.form.get("logout"):
-            session.clear()
-            redirect("/")
         #more error checking
         if(request.form.get("newUsername") != None):
             rows = cur.execute("SELECT * FROM users WHERE email = ?;", (request.form.get("newUsername"),)).fetchall()
