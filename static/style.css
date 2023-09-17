@@ -133,6 +133,8 @@ body {
 .topnav {
     overflow: hidden;
     background-color: #333;
+    display: flex;
+    justify-content: space-between;
 }
 
 .topnav a {
@@ -169,4 +171,15 @@ body {
 .topnav a.active {
     background-color: #04AA6D;
     color: white;
+}
+
+.right-align {
+    margin-left: auto;
+    /* Push this element to the right */
+}
+
+.left-buttons {
+    display: flex;
+    /*gap: 10px;*/
+    /* Adjust the gap as needed */
 }
