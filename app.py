@@ -260,13 +260,11 @@ def checklist():
         elif request.form.get("logout"):
             session.clear()
             redirect("/")
-        symptoms = list(map(int, request.form.getlist('symptom')))
-        i = 0
-        while i < len(symptoms) - 1:
-            if symptoms[i] == 0 and symptoms[i+1] == 1:
-                del symptoms[i]
-            else:
-                i += 1
+        
+        temp = request.form.getlist('symptom')
+        symptoms = [0] * 132
+        for val in temp:
+            symptoms[int(val)] = 1
         cpy = symptoms
         symptoms = [symptoms]
         string_symptoms = []
