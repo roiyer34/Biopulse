@@ -14,7 +14,6 @@
 <h2>Results</h2>
 
 <p>Closest Matching Condition: {{condition}}</p>
-<p>Confidence Score: {{conf_score}}</p>
 
 <button type="button" class="collapsible">Matching Symptoms</button>
 <div class="content">
@@ -24,6 +23,11 @@
         {% endfor %}
     </ul>
     
+</div>
+
+<button type="button" class="collapsible">Description of Disease</button>
+<div class="content">
+    <p>{{description|safe}}</p>
 </div>
 
 <script>

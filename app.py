@@ -220,4 +220,7 @@ def checklist():
         predictions = logmodel.predict(symptoms)
 
         diagnosis = progs[predictions[0]]
-        return render_template('results.html', condition=diagnosis, selected_symptom_list = cpy)
+
+        description = get_disease_info(diagnosis)
+
+        return render_template('results.html', condition=diagnosis, selected_symptom_list = cpy, description = description)
