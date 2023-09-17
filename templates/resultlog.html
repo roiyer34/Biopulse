@@ -38,11 +38,10 @@
         </tr>
         </thead>
         <tbody>
-        {% for item in data %}
         <tr>
-            <td>{{ item.date }}</td>
+            <td>{{ item[0] }}</td>
             <td>
-                <a href="#collapse_{{ loop.index }}" data-toggle="collapse">{{ item.disease }}</a>
+                <a href="#collapse_{{ loop.index }}" data-toggle="collapse">{{ item[1] }}</a>
                 <div id="collapse_{{ loop.index }}" class="collapse">
                     <table class="table table-bordered">
                         <thead>
@@ -54,7 +53,7 @@
                         <tr>
                             <td>
                                 <ul>
-                                    {% for symptom in item.symptoms %}
+                                    {% for symptom in item[2] %}
                                     <li>{{ symptom }}</li>
                                     {% endfor %}
                                 </ul>
@@ -65,7 +64,6 @@
                 </div>
             </td>
         </tr>
-        {% endfor %}
         </tbody>
     </table>
 </div>
