@@ -212,7 +212,6 @@ def checklist():
         elif request.form.get("user_profile"):
             return render_template("userprofile.html")
         symptoms = list(map(int, request.form.getlist('symptom')))
-        cpy = symptoms
         i = 0
         while i < len(symptoms) - 1:
             if symptoms[i] == 0 and symptoms[i+1] == 1:
@@ -220,8 +219,14 @@ def checklist():
             else:
                 i += 1
 
+        cpy = symptoms
         symptoms = [symptoms]
 
+        string_symptoms = []
+        for i in range(len(cpy)):
+            if cpy[i] == 1:
+                string_symptoms.append(df.columns[i])
+        print(string_symptoms)
         predictions = logmodel.predict(symptoms)
 
         diagnosis = progs[predictions[0]]
@@ -232,7 +237,7 @@ def checklist():
         # Create the data dictionary
         data_to_render = {
             "condition": diagnosis,
-            "selected_symptom_list": symptoms,  # Assuming symptoms is a list of symptoms
+            "selected_symptom_list": string_symptoms,  # Assuming symptoms is a list of symptoms
             "description": description  # Pass the description directly
         }
 
