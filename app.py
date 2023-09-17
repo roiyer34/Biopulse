@@ -113,26 +113,25 @@ def extract_summary(xml_content):
 
 def get_disease_info(disease_name):
     if not disease_name:
-        return jsonify({"error": "Disease name not provided"})
+        return {"error": "Disease name not provided"}
 
     # Construct the query URL
     query_url = f"{MEDLINEPLUS_BASE_URL}?db=healthTopics&term={disease_name}"
 
     try:
-        # Send a GET request to the MedlinePlus API
         response = requests.get(query_url)
-        response.raise_for_status()  # Raise an exception for HTTP errors
-
-        # Extract the summary from the most relevant search result
+        response.raise_for_status()
+        
         summary = extract_summary(response.content)
 
         if summary:
-            return jsonify(summary)
+            return summary
         else:
-            return jsonify({"error": "Disease information not found"})
+            return {"error": "Disease information not found"}
 
     except requests.exceptions.RequestException as e:
-        return jsonify({"error": f"Error connecting to MedlinePlus API: {str(e)}"})
+        return {"error": f"Error connecting to MedlinePlus API: {str(e)}"}
+
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -219,9 +218,19 @@ def checklist():
 
         diagnosis = progs[predictions[0]]
 
+        # Get disease information
         description = get_disease_info(diagnosis)
 
-        return render_template('results.html', condition=diagnosis, selected_symptom_list = cpy, **description)
+        # Create the data dictionary
+        data_to_render = {
+            "condition": diagnosis,
+            "selected_symptom_list": symptoms,  # Assuming symptoms is a list of symptoms
+            "description": description  # Pass the description directly
+        }
+
+        # Pass the data to the template
+        return render_template('results.html', **data_to_render)
+
 @app.route("/userprofile", methods = ['GET', 'POST'])
 def userprofile():
     if request.method == "GET":
