@@ -17,6 +17,8 @@ from sqlite3 import Error
 import os
 from werkzeug.security import check_password_hash, generate_password_hash
 import xml.etree.ElementTree as ET
+import json
+from daytime import date
 
 # Create sql database
 db = os.path.realpath('Users.db')
@@ -140,7 +142,7 @@ def get_disease_info(disease_name):
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "GET":
-        if session != None:
+        if "user_email" in session:
             return render_template("checklist.html", symptom_list = x.columns)
         return render_template("index.html", error = "")
     elif request.method == "POST":
@@ -156,7 +158,7 @@ def index():
             #insert user information into database
             if request.form.get("sign_confirm") == request.form.get("sign_password") and not request.form.get("sign_password") == "" and not request.form.get("sign_email") == "":
                 print(request.form.get("sign_password"))
-                cur.execute("INSERT INTO users (email, hash) VALUES (?,?);", (request.form.get("sign_email"), generate_password_hash(request.form.get("sign_password"))))
+                cur.execute("INSERT INTO users (email, hash, prevConditions) VALUES (?,?, ?);", (request.form.get("sign_email"), generate_password_hash(request.form.get("sign_password")), json.dumps([])))
                 conn.commit()
                 return render_template("checklist.html", symptom_list = x.columns)
             else:
@@ -245,6 +247,10 @@ def checklist():
             "description": description  # Pass the description directly
         }
 
+        temp = json.loads(cur.execute("SELECT * FROM USERS WHERE email=(?)", session["user_email"])[2])
+        temp.insert(0, [date.today(), diagnosis, string_symptoms])
+        
+        cur.execute("UPDATE users SET prevCondition=(?) WHERE email=(?);", (json.dumps(temp), session["user_email"]))
         # Pass the data to the template
         return render_template('results.html', **data_to_render)
     
@@ -293,3 +299,19 @@ def userprofile():
             session["user_email"] = None
             session["user_password"] = None
             return render_template("index.html", error="")
+        
+@app.route("/resultlog", methods = ['GET', 'POST'])
+def resultlog():
+    if request.method == "GET":
+        temp = json.loads(cur.execute("SELECT * FROM USERS WHERE email=(?)", session["user_email"])[2])
+        return render_template('resultlog.html', data=temp)
+    if request.method == "POST":
+        if request.form.get("checklist"):
+            return render_template("checklist.html", symptom_list = x.columns)
+        elif request.form.get("result_log"):
+            return render_template("resultlog.html")
+        elif request.form.get("user_profile"):
+            return render_template("userprofile.html")
+        elif request.form.get("logout"):
+            session.clear()
+            redirect("/")
