@@ -85,6 +85,35 @@ logmodel.fit(x_train,y_train)
 # MedlinePlus API base URL
 MEDLINEPLUS_BASE_URL = "https://wsearch.nlm.nih.gov/ws/query"
 
+def clean_text(text):
+    # Split the text into sentences using regular expressions
+    sentences = re.split(r'(?<=[.!?]) +', text)
+
+    # Initialize an empty list to store cleaned sentences
+    cleaned_sentences = []
+
+    for sentence in sentences:
+        # Remove leading and trailing whitespaces
+        cleaned_sentence = sentence.strip()
+
+        # Add a period at the end if it's missing
+        if not cleaned_sentence.endswith('.'):
+            cleaned_sentence += '.'
+
+        # Add spaces after commas when listing symptoms
+        cleaned_sentence = re.sub(r'([A-Za-z]),', r'\1, ', cleaned_sentence)
+
+        # Add commas where needed (before "and" or "or")
+        cleaned_sentence = re.sub(r' (and|or) ', r', \1 ', cleaned_sentence)
+
+        # Add the cleaned sentence to the list
+        cleaned_sentences.append(cleaned_sentence)
+
+    # Join the cleaned sentences to form the cleaned text
+    cleaned_text = ' '.join(cleaned_sentences)
+
+    return cleaned_text
+
 def extract_description(xml_content):
     # Parse the XML content
     root = ET.fromstring(xml_content)
@@ -106,18 +135,14 @@ def extract_description(xml_content):
                 most_relevant_description = description_element.text
 
     if most_relevant_description is not None:
-        # Clean up the description text
-        cleaned_description = " ".join(most_relevant_description.split())  # Remove excessive whitespace
+        # Add spaces after periods and colons
+        cleaned_description = re.sub(r'(?<=[.:])(?=[^\s])', ' ', most_relevant_description)
 
-        # Add spaces after periods to separate sentences
-        cleaned_description = re.sub(r'(?<=[.!?])', ' ', cleaned_description)
-
-        # Add double newline characters to separate paragraphs
-        cleaned_description = re.sub(r'\n', '\n\n', cleaned_description)
-
-        return cleaned_description  # Return as a single string
+        return cleaned_description.strip()  # Return the cleaned description without leading/trailing spaces
     else:
         return None
+
+
 
 
 
