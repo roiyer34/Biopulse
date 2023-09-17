@@ -105,9 +105,14 @@ def extract_description(xml_content):
                 most_relevant_description = description_element.text
 
     if most_relevant_description is not None:
-        return most_relevant_description
+        # Clean up the description text
+        cleaned_description = " ".join(most_relevant_description.split())  # Remove excessive whitespace
+        paragraphs = cleaned_description.split("\n")  # Split into paragraphs
+
+        return paragraphs
     else:
         return None
+
 
 
 def get_disease_info(disease_name):
