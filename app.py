@@ -1,5 +1,6 @@
 # Importing libraries
-from flask import Flask, flash, redirect, render_template, request, session
+from flask import Flask, flash, redirect, render_template, request, session, jsonify
+import requests
 from flask_session import Session
 from tempfile import mkdtemp
 import numpy as np
@@ -15,7 +16,7 @@ import sqlite3
 from sqlite3 import Error
 import os
 from werkzeug.security import check_password_hash, generate_password_hash
-
+import xml.etree.ElementTree as ET
 
 # Create sql database
 db = os.path.realpath('Users.db')
@@ -80,6 +81,56 @@ from sklearn.metrics import classification_report
 logmodel=LogisticRegression(max_iter=1000,C=1)
 logmodel.fit(x_train,y_train)
 
+# MedlinePlus API base URL
+MEDLINEPLUS_BASE_URL = "https://wsearch.nlm.nih.gov/ws/query"
+
+def extract_summary(xml_content):
+    # Parse the XML content
+    root = ET.fromstring(xml_content)
+
+    # Initialize variables to store the most relevant result
+    most_relevant_result = None
+    highest_rank = float('inf')  # Initialize with positive infinity rank
+
+    # Iterate through the search results and find the most relevant one
+    for document in root.findall(".//document"):
+        rank = int(document.get("rank", 0))
+
+        # Check if the current document has a higher rank (lower value is better)
+        if rank < highest_rank:
+            highest_rank = rank
+            most_relevant_result = document
+
+    if most_relevant_result is not None:
+        # Extract information from the most relevant result
+        title = most_relevant_result.find(".//content[@name='title']").text
+        description = most_relevant_result.find(".//content[@name='FullSummary']").text
+        print(description)
+
+        return {"title": title, "description": description}
+    else:
+        return None
+
+def get_disease_info(disease_name):
+    if not disease_name:
+        return {"error": "Disease name not provided"}
+
+    # Construct the query URL
+    query_url = f"{MEDLINEPLUS_BASE_URL}?db=healthTopics&term={disease_name}"
+
+    try:
+        response = requests.get(query_url)
+        response.raise_for_status()
+        
+        summary = extract_summary(response.content)
+
+        if summary:
+            return summary
+        else:
+            return {"error": "Disease information not found"}
+
+    except requests.exceptions.RequestException as e:
+        return {"error": f"Error connecting to MedlinePlus API: {str(e)}"}
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -146,9 +197,6 @@ def index():
         #     return render_template("login.html")
         # else:
         #     return apology("Passwords do not match")
-        return render_template("index.html", error = "")
-
-    return render_template("index.html", error = "")
 
 @app.route("/checklist", methods = ['GET', 'POST'])
 def checklist():
@@ -174,5 +222,44 @@ def checklist():
         predictions = logmodel.predict(symptoms)
 
         diagnosis = progs[predictions[0]]
-        return render_template('results.html', condition=diagnosis, selected_symptom_list = string_symptoms)
-        
+
+        # Get disease information
+        description = get_disease_info(diagnosis)
+
+        # Create the data dictionary
+        data_to_render = {
+            "condition": diagnosis,
+            "selected_symptom_list": symptoms,  # Assuming symptoms is a list of symptoms
+            "description": description  # Pass the description directly
+        }
+
+        # Pass the data to the template
+        return render_template('results.html', **data_to_render)
+
+@app.route("/userprofile", methods = ['GET', 'POST'])
+def userprofile():
+    if request.method == "GET":
+        return render_template('userprofile.html')
+    if request.method == "POST":
+        #more error checking
+        if(request.form.get("newUsername") != None):
+            rows = cur.execute("SELECT * FROM users WHERE email = ?;", (request.form.get("newUsername"),)).fetchall()
+            if(len(rows) == 0):
+                cur.execute("UPDATE users SET email=(?) WHERE email=(?)", (request.form.get("newUsername"), session["user_email"]))
+                conn.commit()
+                session["user_email"] = request.form.get("newUsername")
+                return render_template('userprofile.html', error="Username Changed")
+            else:
+                return render_template('userprofile.html', error_username = "Choose a different username, there is already another user with the same username")
+        elif(request.form.get("newPassword") == request.form.get("confirmPassword") and request.form.get("newPassword") != None):
+            cur.execute("UPDATE users SET hash=(?) WHERE email=(?)", (generate_password_hash(request.form.get("newPassword")), session["user_email"]))
+            conn.commit()
+            return render_template('userprofile.html', error="Password Changed")
+        elif(request.form.get("newPassword") != request.form.get("confirmPassword") and request.form.get("newPassword") != None):
+            return render_template('userprofile.html', error_password="Password Did Not Match")
+        else:
+            cur.execute("DELETE FROM users WHERE email=(?)", session["user_email"])
+            conn.commit()
+            session["user_email"] = None
+            session["user_password"] = None
+            return render_template("index.html", error="")

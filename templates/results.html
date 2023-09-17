@@ -10,6 +10,20 @@
     <link rel="stylesheet" href="../static/style.css">
 </head>
 
+<div class="topnav">
+    <div class="left-buttons">
+        <form method="post" action="/">
+            <input type="submit" value="Questionnaire" name="checklist"></input>
+        </form>
+        <form method="post" action="/">
+            <input type="submit" value="Result Log" name="result_log"></input>
+        </form>
+    </div>
+    <form method="post" action="/" class="right-align">
+        <input type="submit" value="User Profile" name="user_profile"></input>
+    </form>
+</div>
+
 <body> 
 <h2>Results</h2>
 
@@ -23,6 +37,11 @@
         {% endfor %}
     </ul>
     
+</div>
+
+<button type="button" class="collapsible">Description of Disease</button>
+<div class="content">
+    <p>{{description|safe|striptags}} </p>
 </div>
 
 <script>
