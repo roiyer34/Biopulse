@@ -1,7 +1,18 @@
-<!doctype html>
+<!DOCTYPE html>
 <title>Checklist Form</title>
 <link rel="stylesheet" href="../static/style.css">
-<section class="content">
+
+<div class="topnav">
+    <a class="active" href="#home">Checklist</a>
+    <form method="post" action="/">
+        <input type="submit" value="User Profile" name = "user_profile"></input>
+    </form>
+    <form method="post" action="/">
+        <input type="submit" value="Result Log" name = "result_log"></input>
+    </form>
+</div>
+
+<section>
     <form name="checklist" method="post" action= "/checklist">
         {% for symptom in symptom_list %}
         <div>
@@ -15,3 +26,4 @@
         </div>
     </form>
 </section>
+</html>
