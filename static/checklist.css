@@ -134,6 +134,7 @@ input[type=checkbox]:checked + label:before {
 
 .right-align {
     margin-left: auto;
+    display: flex;
 }
 
 .left-buttons {
