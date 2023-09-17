@@ -260,6 +260,7 @@ def checklist():
         elif request.form.get("user_profile"):
             return render_template("userprofile.html")
         elif request.form.get("logout"):
+            print("came into else statement")
             session.clear()
             return redirect("/")
         
