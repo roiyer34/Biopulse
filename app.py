@@ -16,7 +16,7 @@ import sqlite3
 from sqlite3 import Error
 import os
 from werkzeug.security import check_password_hash, generate_password_hash
-
+import xml.etree.ElementTree as ET
 
 # Create sql database
 db = os.path.realpath('Users.db')
@@ -86,7 +86,7 @@ MEDLINEPLUS_BASE_URL = "https://wsearch.nlm.nih.gov/ws/query"
 
 def extract_summary(xml_content):
     # Parse the XML content
-    root = ET.fromstring(xml_content)
+    root = ETIME.fromstring(xml_content)
 
     # Initialize variables to store the most relevant result
     most_relevant_result = None
