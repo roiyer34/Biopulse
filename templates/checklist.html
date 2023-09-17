@@ -20,30 +20,17 @@
             </form>
         </section>
     </div>
-<title>Checklist Form</title>
+    <title>Checklist Form</title>
+    
+    <div class="topnav">
+        <a class="active" href="#home">Questionnaire</a>
+        <form method="post" action="/">
+            <input type="submit" value="Result Log" name="result_log"></input>
+        </form>
+        <form method="post" action="/" class="right-align">
+            <input type="submit" value="User Profile" name = "user_profile"></input>
+        </form>
+    </div>
 
-<div class="topnav">
-    <a class="active" href="#home">Questionnaire</a>
-    <form method="post" action="/">
-        <input type="submit" value="Result Log" name="result_log"></input>
-    </form>
-    <form method="post" action="/" class="right-align">
-        <input type="submit" value="User Profile" name = "user_profile"></input>
-    </form>
-</div>
 
-<section>
-    <form name="checklist" method="post" action= "/checklist">
-        {% for symptom in symptom_list %}
-        <div>
-            <input type="hidden" name= "symptom" value="0">
-            <input type="checkbox" name="symptom" id={{symptom}} value="1"/>
-            <label for={{symptom}}>{{symptom}}</label>
-        </div>
-        {% endfor %}
-        <div>   
-            <input type="submit" name="submit" value="Submit" />
-        </div>
-    </form>
-</section>
-</html>
+    

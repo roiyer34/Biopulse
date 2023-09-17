@@ -229,7 +229,7 @@ def checklist():
         # Create the data dictionary
         data_to_render = {
             "condition": diagnosis,
-            "selected_symptom_list": symptoms,  # Assuming symptoms is a list of symptoms
+            "selected_symptom_list": string_symptoms,  # Assuming symptoms is a list of symptoms
             "description": description  # Pass the description directly
         }
 
