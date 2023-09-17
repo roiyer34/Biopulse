@@ -148,8 +148,6 @@ def index():
         #     return apology("Passwords do not match")
         return render_template("index.html", error = "")
 
-    return render_template("index.html", error = "")
-
 @app.route("/checklist", methods = ['GET', 'POST'])
 def checklist():
     if request.method == "GET":
@@ -171,3 +169,30 @@ def checklist():
         diagnosis = progs[predictions[0]]
         return render_template('results.html', condition=diagnosis, selected_symptom_list = cpy)
         
+@app.route("/userprofile", methods = ['GET', 'POST'])
+def userprofile():
+    if request.method == "GET":
+        return render_template('userprofile.html')
+    if request.method == "POST":
+        #more error checking
+        if(request.form.get("newUsername") != None):
+            rows = cur.execute("SELECT * FROM users WHERE email = ?;", (request.form.get("newUsername"),)).fetchall()
+            if(len(rows) == 0):
+                cur.execute("UPDATE users SET email=(?) WHERE email=(?)", (request.form.get("newUsername"), session["user_email"]))
+                conn.commit()
+                session["user_email"] = request.form.get("newUsername")
+                return render_template('userprofile.html', error="Username Changed")
+            else:
+                return render_template('userprofile.html', error_username = "Choose a different username, there is already another user with the same username")
+        elif(request.form.get("newPassword") == request.form.get("confirmPassword") and request.form.get("newPassword") != None):
+            cur.execute("UPDATE users SET hash=(?) WHERE email=(?)", (generate_password_hash(request.form.get("newPassword")), session["user_email"]))
+            conn.commit()
+            return render_template('userprofile.html', error="Password Changed")
+        elif(request.form.get("newPassword") != request.form.get("confirmPassword") and request.form.get("newPassword") != None):
+            return render_template('userprofile.html', error_password="Password Did Not Match")
+        else:
+            cur.execute("DELETE FROM users WHERE email=(?)", session["user_email"])
+            conn.commit()
+            session["user_email"] = None
+            session["user_password"] = None
+            return render_template("index.html", error="")
