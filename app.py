@@ -84,32 +84,36 @@ logmodel.fit(x_train,y_train)
 # MedlinePlus API base URL
 MEDLINEPLUS_BASE_URL = "https://wsearch.nlm.nih.gov/ws/query"
 
-def extract_summary(xml_content):
+def extract_description(xml_content):
     # Parse the XML content
     root = ET.fromstring(xml_content)
 
-    # Initialize variables to store the most relevant result
-    most_relevant_result = None
+    # Initialize variables to store the most relevant description
+    most_relevant_description = None
     highest_rank = float('inf')  # Initialize with positive infinity rank
 
-    # Iterate through the search results and find the most relevant one
+    # Iterate through the search results and find the most relevant description
     for document in root.findall(".//document"):
         rank = int(document.get("rank", 0))
 
         # Check if the current document has a higher rank (lower value is better)
         if rank < highest_rank:
             highest_rank = rank
-            most_relevant_result = document
+            description_element = document.find(".//content[@name='FullSummary']")
 
-    if most_relevant_result is not None:
-        # Extract information from the most relevant result
-        title = most_relevant_result.find(".//content[@name='title']").text
-        description = most_relevant_result.find(".//content[@name='FullSummary']").text
-        print(description)
+            if description_element is not None:
+                most_relevant_description = description_element.text
 
-        return {"title": title, "description": description}
+    if most_relevant_description is not None:
+        # Clean up the description text
+        cleaned_description = " ".join(most_relevant_description.split())  # Remove excessive whitespace
+        paragraphs = cleaned_description.split("\n")  # Split into paragraphs
+
+        return paragraphs
     else:
         return None
+
+
 
 def get_disease_info(disease_name):
     if not disease_name:
@@ -122,7 +126,7 @@ def get_disease_info(disease_name):
         response = requests.get(query_url)
         response.raise_for_status()
         
-        summary = extract_summary(response.content)
+        summary = extract_description(response.content)
 
         if summary:
             return summary
