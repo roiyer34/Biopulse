@@ -246,7 +246,8 @@ def checklist():
         if request.form.get("checklist"):
             return render_template("checklist.html", symptom_list = x.columns)
         elif request.form.get("result_log"):
-            temp = json.loads(cur.execute("SELECT * FROM USERS WHERE email=(?)", session["user_email"]).fetchall()[0][0])
+            print(cur.execute("SELECT prevConditions FROM USERS WHERE email=(?)", session["user_email"]).fetchall()[0][0])
+            temp = json.loads(cur.execute("SELECT prevConditions FROM USERS WHERE email=(?)", session["user_email"]).fetchall()[0][0])
             return render_template('resultlog.html', data=temp)
         elif request.form.get("user_profile"):
             return render_template("userprofile.html")
@@ -311,7 +312,8 @@ def userprofile():
         if request.form.get("checklist"):
             return render_template("checklist.html", symptom_list = x.columns)
         elif request.form.get("result_log"):
-            temp = json.loads(cur.execute("SELECT * FROM USERS WHERE email=(?)", session["user_email"]).fetchall()[0][0])
+            print(cur.execute("SELECT prevConditions FROM USERS WHERE email=(?)", session["user_email"]).fetchall()[0][0])
+            temp = json.loads(cur.execute("SELECT prevConditions FROM USERS WHERE email=(?)", session["user_email"]).fetchall()[0][0])
             return render_template('resultlog.html', data=temp)
         elif request.form.get("user_profile"):
             return render_template("userprofile.html")
@@ -350,7 +352,9 @@ def resultlog():
         if request.form.get("checklist"):
             return render_template("checklist.html", symptom_list = x.columns)
         elif request.form.get("result_log"):
-            return render_template("resultlog.html")
+            print(cur.execute("SELECT prevConditions FROM USERS WHERE email=(?)", session["user_email"]).fetchall()[0][0])
+            temp = json.loads(cur.execute("SELECT prevConditions FROM USERS WHERE email=(?)", session["user_email"]).fetchall()[0][0])
+            return render_template('resultlog.html', data=temp)
         elif request.form.get("user_profile"):
             return render_template("userprofile.html")
         elif request.form.get("logout"):
