@@ -17,6 +17,8 @@ from sqlite3 import Error
 import os
 from werkzeug.security import check_password_hash, generate_password_hash
 import xml.etree.ElementTree as ET
+import re
+import language_tool_python
 
 # Create sql database
 db = os.path.realpath('Users.db')
@@ -107,11 +109,24 @@ def extract_description(xml_content):
     if most_relevant_description is not None:
         # Clean up the description text
         cleaned_description = " ".join(most_relevant_description.split())  # Remove excessive whitespace
-        paragraphs = cleaned_description.split("\n")  # Split into paragraphs
 
-        return paragraphs
+        # Add spaces after periods to separate sentences
+        cleaned_description = re.sub(r'(?<=[.!?])', ' ', cleaned_description)
+
+        # Initialize the language tool
+        tool = language_tool_python.LanguageTool('en-US')
+
+        # Check for grammar errors
+        matches = tool.check(cleaned_description)
+
+        # Correct grammar errors
+        cleaned_description = language_tool_python.correct(cleaned_description, matches)
+
+        return cleaned_description  # Return as a single string
     else:
         return None
+
+
 
 
 
