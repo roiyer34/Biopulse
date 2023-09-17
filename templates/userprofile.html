@@ -25,7 +25,7 @@
     
     <h2>Change Username</h2>
     <p>Current Username: <span id="currentUsername">{{username}}</span></p>
-    <form id="usernameForm" method="post" action="/">
+    <form id="usernameForm" method="post" action="/userprofile">
         <label for="newUsername">New Username:</label>
         <input type="text" id="newUsername" name="newUsername" required>
         <br>
@@ -35,7 +35,7 @@
     <p>{{error_username}}</p>
 
     <h2>Change Password</h2>
-    <form id="passwordForm" method="post" action="/">
+    <form id="passwordForm" method="post" action="/userprofile">
         <label for="currentPassword">Current Password:</label>
         <input type="password" id="currentPassword" name="currentPassword" required>
         <br>
@@ -50,7 +50,7 @@
     <p>{{error_password}}</p>
 
     <h2>Delete Profile</h2>
-    <form id="deleteProfile" method="post" action="/">
+    <form id="deleteProfile" method="post" action="/userprofile">
         <input type="submit" id="deleteProfileButton" value="Delete Profile">
     </form>
 </body>
