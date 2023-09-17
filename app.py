@@ -19,7 +19,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import xml.etree.ElementTree as ET
 import re
 import json
-from daytime import date
+from datetime import date
 
 # Create sql database
 db = os.path.realpath('Users.db')
@@ -255,10 +255,12 @@ def checklist():
             "description": description  # Pass the description directly
         }
 
-        temp = json.loads(cur.execute("SELECT * FROM USERS WHERE email=(?)", session["user_email"])[2])
-        temp.insert(0, [date.today(), diagnosis, string_symptoms])
+        temp = cur.execute("SELECT prevConditions FROM users WHERE email=(?)", session["user_email"]).fetchall()
+        temp = temp[0][0]
+        temp = json.loads(temp)
+        temp.insert(0, [str(date.today()), diagnosis, string_symptoms])
         
-        cur.execute("UPDATE users SET prevCondition=(?) WHERE email=(?);", (json.dumps(temp), session["user_email"]))
+        cur.execute("UPDATE users SET prevConditions=(?) WHERE email=(?);", (json.dumps(temp), session["user_email"]))
         # Pass the data to the template
         return render_template('results.html', **data_to_render)
     
