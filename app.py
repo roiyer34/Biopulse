@@ -230,6 +230,9 @@ def checklist():
             return render_template("resultlog.html")
         elif request.form.get("user_profile"):
             return render_template("userprofile.html")
+        elif request.form.get("logout"):
+            session.clear()
+            redirect("/")
         symptoms = list(map(int, request.form.getlist('symptom')))
         i = 0
         while i < len(symptoms) - 1:
@@ -274,6 +277,9 @@ def results():
             return render_template("resultlog.html")
         elif request.form.get("user_profile"):
             return render_template("userprofile.html")
+        elif request.form.get("logout"):
+            session.clear()
+            redirect("/")
 
 @app.route("/userprofile", methods = ['GET', 'POST'])
 def userprofile():
@@ -286,6 +292,9 @@ def userprofile():
             return render_template("resultlog.html")
         elif request.form.get("user_profile"):
             return render_template("userprofile.html")
+        elif request.form.get("logout"):
+            session.clear()
+            redirect("/")
         #more error checking
         if(request.form.get("newUsername") != None):
             rows = cur.execute("SELECT * FROM users WHERE email = ?;", (request.form.get("newUsername"),)).fetchall()
