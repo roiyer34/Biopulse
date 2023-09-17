@@ -84,6 +84,10 @@ from sklearn.metrics import classification_report
 logmodel=LogisticRegression(max_iter=1000,C=1)
 logmodel.fit(x_train,y_train)
 
+formattedSymptoms = []
+for val in x.columns:
+    formattedSymptoms.append(val.replace("_", " ").title())
+
 # MedlinePlus API base URL
 MEDLINEPLUS_BASE_URL = "https://wsearch.nlm.nih.gov/ws/query"
 
@@ -176,7 +180,7 @@ def get_disease_info(disease_name):
 def index():
     if request.method == "GET":
         if "user_email" in session:
-            return render_template("checklist.html", symptom_list = x.columns)
+            return render_template("checklist.html", symptom_list = formattedSymptoms)
         return render_template("index.html", error = "")
     elif request.method == "POST":
         #user is trying to register
@@ -195,7 +199,7 @@ def index():
                 rows = cur.execute("SELECT * FROM users WHERE email = ?", (request.form.get("sign_email"),)).fetchall()
                 session["user_email"] = rows[0][0]
                 session["user_password"] = rows[0][1]
-                return render_template("checklist.html", symptom_list = x.columns)
+                return render_template("checklist.html", symptom_list = formattedSymptoms)
             else:
                 return render_template("index.html", error="Passwords don't match")
             
@@ -223,7 +227,7 @@ def index():
                 session["user_password"] = rows[0][1]
 
                 # Redirect user to home page
-                return render_template("checklist.html", symptom_list = x.columns)
+                return render_template("checklist.html", symptom_list = formattedSymptoms)
 
 
         # if request.form.get()
@@ -244,12 +248,11 @@ def index():
 @app.route("/checklist", methods = ['GET', 'POST'])
 def checklist():
     if request.method == "GET":
-        return render_template("checklist.html", symptom_list = x.columns)
+        return render_template("checklist.html", symptom_list = formattedSymptoms)
     if request.method == "POST":
         if request.form.get("checklist"):
-            return render_template("checklist.html", symptom_list = x.columns)
+            return render_template("checklist.html", symptom_list = formattedSymptoms)
         elif request.form.get("result_log"):
-            print(cur.execute("SELECT prevConditions FROM USERS WHERE email=(?)", session["user_email"]).fetchall()[0][0])
             temp = json.loads(cur.execute("SELECT prevConditions FROM USERS WHERE email=(?)", session["user_email"]).fetchall()[0][0])
             return render_template('resultlog.html', data=temp)
         elif request.form.get("user_profile"):
@@ -269,7 +272,7 @@ def checklist():
         string_symptoms = []
         for i in range(len(cpy)):
             if cpy[i] == 1:
-                string_symptoms.append(df.columns[i])
+                string_symptoms.append(df.columns[i].replace("_", " ").title())
         predictions = logmodel.predict(symptoms)
         diagnosis = progs[predictions[0]]
         # Get disease information
@@ -293,12 +296,11 @@ def checklist():
 @app.route("/results", methods = ['GET', 'POST'])
 def results():
     if request.method == "GET":
-        return render_template("checklist.html", symptom_list = x.columns)
+        return render_template("checklist.html", symptom_list = formattedSymptoms)
     if request.method == "POST":
         if request.form.get("checklist"):
             return render_template("checklist.html")
         elif request.form.get("result_log"):
-            print(cur.execute("SELECT prevConditions FROM USERS WHERE email=(?)", session["user_email"]).fetchall()[0][0])
             temp = json.loads(cur.execute("SELECT prevConditions FROM USERS WHERE email=(?)", session["user_email"]).fetchall()[0][0])
             return render_template('resultlog.html', data=temp)
         elif request.form.get("user_profile"):
@@ -312,11 +314,9 @@ def userprofile():
     if request.method == "GET":
         return render_template('userprofile.html')
     if request.method == "POST":
-        print(session)
         if request.form.get("checklist"):
-            return render_template("checklist.html", symptom_list = x.columns)
+            return render_template("checklist.html", symptom_list = formattedSymptoms)
         elif request.form.get("result_log"):
-            print(cur.execute("SELECT prevConditions FROM USERS WHERE email=(?)", session["user_email"]).fetchall()[0][0])
             temp = json.loads(cur.execute("SELECT prevConditions FROM USERS WHERE email=(?)", session["user_email"]).fetchall()[0][0])
             return render_template('resultlog.html', data=temp)
         elif request.form.get("user_profile"):
@@ -354,9 +354,8 @@ def resultlog():
         return render_template('resultlog.html', data=temp)
     if request.method == "POST":
         if request.form.get("checklist"):
-            return render_template("checklist.html", symptom_list = x.columns)
+            return render_template("checklist.html", symptom_list = formattedSymptoms)
         elif request.form.get("result_log"):
-            print(cur.execute("SELECT prevConditions FROM USERS WHERE email=(?)", session["user_email"]).fetchall()[0][0])
             temp = json.loads(cur.execute("SELECT prevConditions FROM USERS WHERE email=(?)", session["user_email"]).fetchall()[0][0])
             return render_template('resultlog.html', data=temp)
         elif request.form.get("user_profile"):
