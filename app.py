@@ -248,6 +248,8 @@ def index():
 @app.route("/checklist", methods = ['GET', 'POST'])
 def checklist():
     if request.method == "GET":
+        if session == None or len(session) == 0:
+            return redirect("/")
         return render_template("checklist.html", symptom_list = formattedSymptoms)
     if request.method == "POST":
         if request.form.get("checklist"):
@@ -258,8 +260,9 @@ def checklist():
         elif request.form.get("user_profile"):
             return render_template("userprofile.html")
         elif request.form.get("logout"):
+            print("came into else statement")
             session.clear()
-            redirect("/")
+            return redirect("/")
         
         temp = request.form.getlist('symptom')
         symptoms = [0] * 132
@@ -294,6 +297,8 @@ def checklist():
 @app.route("/results", methods = ['GET', 'POST'])
 def results():
     if request.method == "GET":
+        if session == None or len(session) == 0:
+            return redirect("/")
         return render_template("checklist.html", symptom_list = formattedSymptoms)
     if request.method == "POST":
         if request.form.get("checklist"):
@@ -305,11 +310,13 @@ def results():
             return render_template("userprofile.html")
         elif request.form.get("logout"):
             session.clear()
-            redirect("/")
+            return redirect("/")
 
 @app.route("/userprofile", methods = ['GET', 'POST'])
 def userprofile():
     if request.method == "GET":
+        if session == None or len(session) == 0:
+            return redirect("/")
         return render_template('userprofile.html')
     if request.method == "POST":
         if request.form.get("checklist"):
@@ -321,7 +328,7 @@ def userprofile():
             return render_template("userprofile.html")
         elif request.form.get("logout"):
             session.clear()
-            redirect("/")
+            return redirect("/")
         #more error checking
         if(request.form.get("newUsername") != None):
             rows = cur.execute("SELECT * FROM users WHERE email = ?;", (request.form.get("newUsername"),)).fetchall()
@@ -348,6 +355,8 @@ def userprofile():
 @app.route("/resultlog", methods = ['GET', 'POST'])
 def resultlog():
     if request.method == "GET":
+        if session == None or len(session) == 0:
+            return redirect("/")
         temp = json.loads(cur.execute("SELECT * FROM USERS WHERE email=(?)", session["user_email"]).fetchall()[0][0])
         return render_template('resultlog.html', data=temp)
     if request.method == "POST":
@@ -360,4 +369,5 @@ def resultlog():
             return render_template("userprofile.html")
         elif request.form.get("logout"):
             session.clear()
-            redirect("/")
+            return redirect("/")
+    return render_template("index.html", error= "")
