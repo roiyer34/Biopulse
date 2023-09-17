@@ -88,7 +88,59 @@ input[type=checkbox]:checked + label h2 span {
 input[type=checkbox]:checked + label:before {
   background: url("https://i.imgur.com/eoPQ05r.png") no-repeat center center;
 }
+.topnav {
+    overflow: hidden;
+    background-color: #333;
+    display: flex;
+    justify-content: space-between;
+}
 
+.topnav a {
+    float: left;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 15px 16px;
+    text-decoration: none;
+    font-size: 17px;
+}
+
+.topnav input {
+    float: left;
+    background-color: #333;
+    text-align: center;
+    padding: 15px 16px;
+    text-decoration: none;
+    font-size: 17px;
+    color: #f2f2f2;
+    box-shadow: none;
+    border: none;
+}
+
+.topnav a:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+.topnav input:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+.topnav a.active {
+    background-color: #04AA6D;
+    color: white;
+}
+
+.right-align {
+    margin-left: auto;
+    /* Push this element to the right */
+}
+
+.left-buttons {
+    display: flex;
+    /*gap: 10px;*/
+    /* Adjust the gap as needed */
+}
 
 
 
