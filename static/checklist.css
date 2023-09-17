@@ -1,0 +1,95 @@
+/* tiny reset */
+html, body {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+}
+/* body */
+body{
+  background: #272D2D;
+  font-family: sans-serif;
+  border-top: 5px solid #696773;
+}
+/* title */
+h1{
+  color: #00B88D;
+  text-align: center;
+  font-size: 45px;
+  font-weight: 900;
+}
+/* tasks */
+.tasks{
+  width: 50%;
+  height: 50%;
+  position: absolute;
+  top: 20%;
+  left: 0px; 
+  right: 0px;
+  margin: 0px auto;
+  border-radius: 25%;
+}
+input[type=checkbox] {
+  display: none;
+}
+/* Custom Label Styles */
+label {
+  background: #00CC9C;
+  height: 69px;
+  width: 100%;
+  display: block;
+  border-bottom: 1px solid #FFFFFF;
+  color: #fff;
+  text-transform: capitalize;
+  font-weight: 900;
+  font-size: 18px;
+  letter-spacing: 1px;
+  text-align: center;  
+  cursor: pointer;
+  transition: all 0.7s ease;
+  position: relative;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+label h2 span {
+  display: block;
+  font-size: 18px;
+  text-transform: capitalize;
+  font-weight: normal;
+  color: #fff;
+  border-radius: 5%;
+}
+
+label:before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  display: block;
+  position: absolute;
+  border-radius: 100%;
+  right: 20px;
+  top: 30%;
+  transition: border 0.7s ease;
+}
+
+/* Checked Label Styles */
+input[type=checkbox]:checked + label {
+  background: #00A37D;
+  border-bottom: 1px solid #FFFFFF;
+  color: #131616;
+}
+
+input[type=checkbox]:checked + label h2 span {
+  color: #131616;
+}
+
+input[type=checkbox]:checked + label:before {
+  background: url("https://i.imgur.com/eoPQ05r.png") no-repeat center center;
+}
+
+
+
+
+

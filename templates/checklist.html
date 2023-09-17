@@ -1,17 +1,23 @@
-<!doctype html>
-<title>Checklist Form</title>
-<link rel="stylesheet" href="../static/style.css">
-<section class="content">
-    <form name="checklist" method="post" action= "/checklist">
-        {% for symptom in symptom_list %}
-        <div>
-            <input type="hidden" name= "symptom" value="0">
-            <input type="checkbox" name="symptom" id={{symptom}} value="1"/>
-            <label for={{symptom}}>{{symptom}}</label>
-        </div>
-        {% endfor %}
-        <div>   
-            <input type="submit" name="submit" value="Submit" />
-        </div>
-    </form>
-</section>
+<!DOCTYPE html>
+
+<html lang="en">
+    <div class="tasks">
+        <h1>Item Check List</h1>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../static/checklist.css">
+        <section >
+            <form name="checklist" method="post" action= "/checklist">
+                {% for symptom in symptom_list %}
+                <div class="list">
+                    <input type="hidden" name= "symptom" value="0">
+                    <input type="checkbox" name="symptom" id={{symptom}} value="1"/>
+                    <label for={{symptom}}>{{symptom}}</label>
+                </div>
+                {% endfor %}
+                <div>   
+                    <input type="submit" name="submit" value="Submit" />
+                </div>
+            </form>
+        </section>
+    </div>
+</html>

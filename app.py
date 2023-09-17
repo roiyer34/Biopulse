@@ -156,7 +156,6 @@ def checklist():
         return render_template('checklist.html')
     if request.method == "POST":
         symptoms = list(map(int, request.form.getlist('symptom')))
-        cpy = symptoms
         i = 0
         while i < len(symptoms) - 1:
             if symptoms[i] == 0 and symptoms[i+1] == 1:
@@ -164,10 +163,16 @@ def checklist():
             else:
                 i += 1
 
+        cpy = symptoms
         symptoms = [symptoms]
 
+        string_symptoms = []
+        for i in range(len(cpy)):
+            if cpy[i] == 1:
+                string_symptoms.append(df.columns[i])
+        print(string_symptoms)
         predictions = logmodel.predict(symptoms)
 
         diagnosis = progs[predictions[0]]
-        return render_template('results.html', condition=diagnosis, selected_symptom_list = cpy)
+        return render_template('results.html', condition=diagnosis, selected_symptom_list = string_symptoms)
         
