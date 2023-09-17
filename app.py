@@ -190,7 +190,6 @@ def index():
                 return render_template("index.html", error="There is already an account with the given username")
             #insert user information into database
             if request.form.get("sign_confirm") == request.form.get("sign_password") and not request.form.get("sign_password") == "" and not request.form.get("sign_email") == "":
-                print(request.form.get("sign_password"))
                 cur.execute("INSERT INTO users (email, hash, prevConditions) VALUES (?,?, ?);", (request.form.get("sign_email"), generate_password_hash(request.form.get("sign_password")), json.dumps([])))
                 conn.commit()
                 return render_template("checklist.html", symptom_list = x.columns)
@@ -247,9 +246,13 @@ def checklist():
         if request.form.get("checklist"):
             return render_template("checklist.html", symptom_list = x.columns)
         elif request.form.get("result_log"):
-            return render_template("resultlog.html")
+            temp = json.loads(cur.execute("SELECT * FROM USERS WHERE email=(?)", session["user_email"]).fetchall()[0][0])
+            return render_template('resultlog.html', data=temp)
         elif request.form.get("user_profile"):
             return render_template("userprofile.html")
+        elif request.form.get("logout"):
+            session.clear()
+            redirect("/")
         symptoms = list(map(int, request.form.getlist('symptom')))
         i = 0
         while i < len(symptoms) - 1:
@@ -257,19 +260,14 @@ def checklist():
                 del symptoms[i]
             else:
                 i += 1
-
         cpy = symptoms
         symptoms = [symptoms]
-
         string_symptoms = []
         for i in range(len(cpy)):
             if cpy[i] == 1:
                 string_symptoms.append(df.columns[i])
-        print(string_symptoms)
         predictions = logmodel.predict(symptoms)
-
         diagnosis = progs[predictions[0]]
-
         # Get disease information
         description = get_disease_info(diagnosis)
 
@@ -279,12 +277,10 @@ def checklist():
             "selected_symptom_list": string_symptoms,  # Assuming symptoms is a list of symptoms
             "description": description  # Pass the description directly
         }
-
         temp = cur.execute("SELECT prevConditions FROM users WHERE email=(?)", session["user_email"]).fetchall()
         temp = temp[0][0]
         temp = json.loads(temp)
         temp.insert(0, [str(date.today()), diagnosis, string_symptoms])
-        
         cur.execute("UPDATE users SET prevConditions=(?) WHERE email=(?);", (json.dumps(temp), session["user_email"]))
         # Pass the data to the template
         return render_template('results.html', **data_to_render)
@@ -297,21 +293,31 @@ def results():
         if request.form.get("checklist"):
             return render_template("checklist.html")
         elif request.form.get("result_log"):
-            return render_template("resultlog.html")
+            print(cur.execute("SELECT prevConditions FROM USERS WHERE email=(?)", session["user_email"]).fetchall()[0][0])
+            temp = json.loads(cur.execute("SELECT prevConditions FROM USERS WHERE email=(?)", session["user_email"]).fetchall()[0][0])
+            return render_template('resultlog.html', data=temp)
         elif request.form.get("user_profile"):
             return render_template("userprofile.html")
+        elif request.form.get("logout"):
+            session.clear()
+            redirect("/")
 
 @app.route("/userprofile", methods = ['GET', 'POST'])
 def userprofile():
     if request.method == "GET":
         return render_template('userprofile.html')
     if request.method == "POST":
+        print(session)
         if request.form.get("checklist"):
             return render_template("checklist.html", symptom_list = x.columns)
         elif request.form.get("result_log"):
-            return render_template("resultlog.html")
+            temp = json.loads(cur.execute("SELECT * FROM USERS WHERE email=(?)", session["user_email"]).fetchall()[0][0])
+            return render_template('resultlog.html', data=temp)
         elif request.form.get("user_profile"):
             return render_template("userprofile.html")
+        elif request.form.get("logout"):
+            session.clear()
+            redirect("/")
         #more error checking
         if(request.form.get("newUsername") != None):
             rows = cur.execute("SELECT * FROM users WHERE email = ?;", (request.form.get("newUsername"),)).fetchall()
@@ -338,7 +344,7 @@ def userprofile():
 @app.route("/resultlog", methods = ['GET', 'POST'])
 def resultlog():
     if request.method == "GET":
-        temp = json.loads(cur.execute("SELECT * FROM USERS WHERE email=(?)", session["user_email"])[2])
+        temp = json.loads(cur.execute("SELECT * FROM USERS WHERE email=(?)", session["user_email"]).fetchall()[0][0])
         return render_template('resultlog.html', data=temp)
     if request.method == "POST":
         if request.form.get("checklist"):
