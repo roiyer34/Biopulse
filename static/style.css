@@ -107,26 +107,64 @@ body {
     text-decoration: underline;
 }
 
-.collapsible {
-    background-color: #777;
-    color: white;
-    cursor: pointer;
-    padding: 18px;
-    width: 100%;
-    border: none;
-    text-align: left;
-    outline: none;
-    font-size: 15px;
+.custom-content {
+    display: none;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
 }
 
-.active, .collapsible:hover {
-    background-color: #555;
+.collapsible {
+    background-color: #009579;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: left;
+    width: 100%;
+    border-radius: 0;
+    margin-bottom: -5px;
+}
+
+.collapsible:hover {
+    background-color: #2980b9;
+}
+
+.condition {
+    padding-top: 10px;
+    margin-bottom: 10px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.table-container {
+    max-height: 450px;
+    overflow-y: auto;
+}
+
+.diagnosis-ticker {
+    background-color: #f4f4f4;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 0;
+    margin-top: 20px;
+}
+
+.diagnosis-ticker p {
+    font-size: 16px;
 }
 
 .content {
     padding: 0 18px;
     display: none;
-    overflow: hidden;
+    overflow-y: auto;
     background-color: #f1f1f1;
 }
 
@@ -188,4 +226,16 @@ ul {
     /* Add padding-left to move the bullet points to the right */
     padding-left: 20px;
     /* Adjust the value as needed */
+}
+
+h2{
+    padding-top: 30px;
+}
+
+/* style.css */
+.table-container {
+    max-height: 450px;
+    /* Adjust the max height as needed */
+    overflow-y: auto;
+    /* Add vertical scrollbar if content exceeds max height */
 }

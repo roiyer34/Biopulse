@@ -29,25 +29,29 @@
     </div>
 </div>
 
-<body> 
-<h2>Results</h2>
+<body>
+    <div class="container">
+        <div class="text-center"> <!-- Center align the content -->
+            <p class="condition">Closest Matching Condition: <b>{{condition}}</b> </p>
+        </div>
+        <div class="table-container">
 
-<p>Closest Matching Condition: {{condition}}</p>
+            <button type="button" class="collapsible">Matching Symptoms</button>
+            <div class="custom-content">
+                <ul>
+                    {% for symptom in selected_symptom_list %}
+                    <li>{{symptom}}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        
+            <button type="button" class="collapsible">Description of Disease</button>
+            <div class="custom-content">
+                <p>{{description|safe}}</p>
+            </div>
+        </div>
+    </div>
 
-<button type="button" class="collapsible">Matching Symptoms</button>
-<div class="content">
-    <ul>
-        {% for symptom in selected_symptom_list %}
-        <li>{{symptom}}</li>
-        {% endfor %}
-    </ul>
-    
-</div>
-
-<button type="button" class="collapsible">Description of Disease</button>
-<div class="content">
-    <p>{{description|safe}} </p>
-</div>
 
 <script>
     var coll = document.getElementsByClassName("collapsible");
@@ -57,13 +61,16 @@
         coll[i].addEventListener("click", function () {
             this.classList.toggle("active");
             var content = this.nextElementSibling;
-            if (content.style.display === "block") {
+            if (content.style.display === "block" || content.style.maxHeight) {
                 content.style.display = "none";
+                content.style.maxHeight = null;
             } else {
                 content.style.display = "block";
+                content.style.maxHeight = content.scrollHeight + "px";
             }
         });
     }
 </script>
+
 
 </body>
